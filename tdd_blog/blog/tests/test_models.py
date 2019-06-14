@@ -1,8 +1,6 @@
 from django.test import TestCase
 
-from .models import Entry
-
-# Create your tests here.
+from blog.models import Entry
 
 
 class EntryModelTest(TestCase):

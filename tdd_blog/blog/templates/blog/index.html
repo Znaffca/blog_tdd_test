@@ -1,0 +1,15 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+    {% for entry in entry_list %}
+        <article>
+            <h2><a href="{{ entry.get_absolute_url }}">{{ entry.title }}</a></h2>
+
+            <p class="subheader">
+                <time>{{ entry.modified|date }}</time>
+            </p>
+            <p></p>
+            {{ entry.body|linebreaks }}
+        </article>
+    {% endfor %}
+{% endblock content %}
