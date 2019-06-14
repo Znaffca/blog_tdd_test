@@ -1,0 +1,5 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+    {% include "blog/_entry.html" with entry=entry only %}
+{% endblock content %}

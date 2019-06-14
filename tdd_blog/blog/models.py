@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 
 
@@ -8,6 +9,10 @@ class Entry(models.Model):
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True, editable=False)
     modified = models.DateTimeField(auto_now=True, editable=False)
+    objects = models.Manager()
+
+    def get_absolute_url(self):
+        return reverse("blog:entry_detail", args=(self.pk,))
 
     def __str__(self):
         return self.title
