@@ -1,0 +1,11 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+    {% for entry in entry_list %}
+        {% include "blog/_entry.html" with entry=entry only %}
+    {% empty %}
+        <article>
+            <h2>There are no blog entries yet.</h2>
+        </article>
+    {% endfor %}
+{% endblock content %}
