@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from blog.models import Entry
+from blog.models import Entry, Comment
 
 
 class EntryModelTest(TestCase):
@@ -15,3 +15,11 @@ class EntryModelTest(TestCase):
         user = get_user_model().objects.create(username="some_user")
         entry = Entry.objects.create(title="my entry title", author=user)
         self.assertIsNotNone(entry.get_absolute_url())
+
+
+class CommentModelTest(TestCase):
+    def test_comment_representation(self):
+        comment = Comment(
+            name="greg", email="greg@gmail.com", body="Some b****it is here "
+        )
+        self.assertEqual(str(comment), comment.body)

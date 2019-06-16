@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from blog.models import Entry
+from blog.models import Entry, Comment
 
 
 class ProjectViewInitialTest(TestCase):
@@ -51,3 +51,25 @@ class EntryViewDetailTest(TestCase):
         response = self.client.get(self.entry.get_absolute_url())
         self.assertContains(response, self.entry.title)
         self.assertContains(response, self.entry.body)
+
+    def test_no_comments_in_entry(self):
+        response = self.client.get(self.entry.get_absolute_url())
+        self.assertContains(response, "There are no comments yet.")
+
+    def test_single_comment_in_entry(self):
+        comment = Comment.objects.create(
+            entry=self.entry, name="test", body="some test"
+        )
+        response = self.client.get(self.entry.get_absolute_url())
+        self.assertContains(response, comment.body)
+
+    def test_two_comments_in_entry(self):
+        comment1 = Comment.objects.create(
+            entry=self.entry, name="test1", body="some test1"
+        )
+        comment2 = Comment.objects.create(
+            entry=self.entry, name="test2", body="some test2"
+        )
+        response = self.client.get(self.entry.get_absolute_url())
+        self.assertContains(response, comment1.body)
+        self.assertContains(response, comment2.body)
