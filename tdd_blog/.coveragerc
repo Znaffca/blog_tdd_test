@@ -1,4 +1,11 @@
 [run]
-# include = ./*
-source = .
-branch = True
+    # include = ./*
+    source = .
+    branch = True
+
+[report]
+    exclude_lines = 
+        raise ImportError
+        except ImportError
+
+        if __name__ == .__main__.:
