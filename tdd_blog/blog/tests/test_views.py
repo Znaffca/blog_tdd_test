@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django_webtest import WebTest
 from blog.models import Entry, Comment
 
 
@@ -36,7 +37,7 @@ class HomePageTest(TestCase):
         self.assertContains(response, "There are no blog entries yet.")
 
 
-class EntryViewDetailTest(TestCase):
+class EntryViewDetailTest(WebTest):
     def setUp(self):
         self.user = get_user_model().objects.create(username="Skipper")
         self.entry = Entry.objects.create(
@@ -73,3 +74,20 @@ class EntryViewDetailTest(TestCase):
         response = self.client.get(self.entry.get_absolute_url())
         self.assertContains(response, comment1.body)
         self.assertContains(response, comment2.body)
+
+    def test_view_page(self):
+        page = self.app.get(self.entry.get_absolute_url())
+        self.assertEqual(len(page.forms), 1)
+
+    def test_form_error(self):
+        page = self.app.get(self.entry.get_absolute_url())
+        page = page.form.submit()
+        self.assertContains(page, "This field is required.")
+
+    def test_form_success(self):
+        page = self.app.get(self.entry.get_absolute_url())
+        page.form["name"] = "Philip"
+        page.form["email"] = "philipp2@hotmail.com"
+        page.form["body"] = "some test form text"
+        page = page.form.submit()
+        self.assertRedirects(page, self.entry.get_absolute_url())
