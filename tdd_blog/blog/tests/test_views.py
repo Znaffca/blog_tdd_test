@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from django.template import Template, Context
 from django_webtest import WebTest
 from blog.models import Entry, Comment
+from django.template.defaultfilters import slugify
+import datetime
 
 
 class ProjectViewInitialTest(TestCase):
@@ -92,6 +94,38 @@ class EntryViewDetailTest(WebTest):
         page.form["body"] = "some test form text"
         page = page.form.submit()
         self.assertRedirects(page, self.entry.get_absolute_url())
+
+
+class EntryViewUrlTest(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create(username="test")
+        self.entry = Entry.objects.create(title="title", body="body", author=self.user)
+
+    def test_url(self):
+        title = "my test title"
+        today = datetime.date.today()
+        entry = Entry.objects.create(title=title, body="body", author=self.user)
+        test_slug = slugify(title)
+        url = "/blog/{year}/{month}/{day}/{pk}-{slug}/".format(
+            year = today.year,
+            month = today.month,
+            day = today.day,
+            pk = entry.pk,
+            slug = test_slug,
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, template_name='blog/entry_detail.html')
+    
+    def test_missdated_url(self):
+        url = "/blog/0000/00/00/{0}-misdated/".format(self.entry.id)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, template_name='blog/entry_detail.html')
+    
+    def test_invalid_url(self):
+        response = self.client.get("/blog/0000/00/00/0-invalid-url/")
+        self.assertEqual(response.status_code, 404)
 
 
 class EntryHistoryTagTest(TestCase):

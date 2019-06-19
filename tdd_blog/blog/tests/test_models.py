@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import truncatewords
 from blog.models import Entry, Comment
+import hashlib
 
 
 class EntryModelTest(TestCase):
@@ -37,3 +38,9 @@ class CommentModelTest(TestCase):
             name="greg", email="greg@gmail.com", body="Some b****it is here "
         )
         self.assertEqual(str(comment), comment.body)
+    
+    def test_avatar_url(self):
+        comment = Comment(body="comment body", email="comment@ms.com")
+        comment_hash = hashlib.md5(comment.email.encode())
+        expected = "http://www.gravatar.com/avatar/{}".format(comment_hash.hexdigest())
+        self.assertEqual(comment.gravatar_url(), expected)
