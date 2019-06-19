@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.template import Template, Context
 from django_webtest import WebTest
 from blog.models import Entry, Comment
 
@@ -91,3 +92,28 @@ class EntryViewDetailTest(WebTest):
         page.form["body"] = "some test form text"
         page = page.form.submit()
         self.assertRedirects(page, self.entry.get_absolute_url())
+
+
+class EntryHistoryTagTest(TestCase):
+
+    TEMPLATE = Template("{% load blog_tags %} {% entry_history %}")
+
+    def setUp(self):
+        self.user = get_user_model().objects.create(username="test")
+
+    def test_entry_show_up(self):
+        entry = Entry.objects.create(title="Some title", author=self.user)
+        rendered = self.TEMPLATE.render(Context({}))
+        self.assertIn(entry.title, rendered)
+
+    def test_no_recent_entries(self):
+        rendered = self.TEMPLATE.render(Context({}))
+        self.assertIn("There are no recent entries yet.", rendered)
+
+    def test_show_many_entries(self):
+        for i in range(1, 6):
+            Entry.objects.create(title=f"Post {i}", author=self.user)
+        rendered = self.TEMPLATE.render(Context({}))
+        for i in range(1, 6):
+            self.assertIn(f"Post {i}", rendered)
+        self.assertNotIn("Post 8", rendered)

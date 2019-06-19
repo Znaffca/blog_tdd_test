@@ -5,6 +5,8 @@
 
 [report]
     exclude_lines = 
+
+        # in manage.py
         raise ImportError
         except ImportError
 
