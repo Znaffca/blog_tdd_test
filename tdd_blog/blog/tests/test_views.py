@@ -107,22 +107,22 @@ class EntryViewUrlTest(TestCase):
         entry = Entry.objects.create(title=title, body="body", author=self.user)
         test_slug = slugify(title)
         url = "/blog/{year}/{month}/{day}/{pk}-{slug}/".format(
-            year = today.year,
-            month = today.month,
-            day = today.day,
-            pk = entry.pk,
-            slug = test_slug,
+            year=today.year,
+            month=today.month,
+            day=today.day,
+            pk=entry.pk,
+            slug=test_slug,
         )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, template_name='blog/entry_detail.html')
-    
+        self.assertTemplateUsed(response, template_name="blog/entry_detail.html")
+
     def test_missdated_url(self):
         url = "/blog/0000/00/00/{0}-misdated/".format(self.entry.id)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, template_name='blog/entry_detail.html')
-    
+        self.assertTemplateUsed(response, template_name="blog/entry_detail.html")
+
     def test_invalid_url(self):
         response = self.client.get("/blog/0000/00/00/0-invalid-url/")
         self.assertEqual(response.status_code, 404)

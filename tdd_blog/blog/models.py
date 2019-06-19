@@ -11,7 +11,7 @@ class Entry(models.Model):
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True, editable=False)
     modified = models.DateTimeField(auto_now=True, editable=False)
-    slug = models.SlugField(default='', editable=False)
+    slug = models.SlugField(default="", editable=False)
     objects = models.Manager()
 
     @property
@@ -24,10 +24,10 @@ class Entry(models.Model):
             "month": self.created.month,
             "day": self.created.day,
             "pk": self.pk,
-            "slug": self.slug
+            "slug": self.slug,
         }
         return reverse("blog:entry_detail", kwargs=kwargs)
-    
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
@@ -50,7 +50,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.body
-    
+
     def gravatar_url(self):
         md_hash = hashlib.md5(self.email.encode())
         digest = md_hash.hexdigest()

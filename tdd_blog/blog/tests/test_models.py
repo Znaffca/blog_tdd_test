@@ -38,7 +38,7 @@ class CommentModelTest(TestCase):
             name="greg", email="greg@gmail.com", body="Some b****it is here "
         )
         self.assertEqual(str(comment), comment.body)
-    
+
     def test_avatar_url(self):
         comment = Comment(body="comment body", email="comment@ms.com")
         comment_hash = hashlib.md5(comment.email.encode())
